@@ -1,0 +1,730 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#080e1b">
+  <title>POWERAI | Battery Intelligence Platform</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="style.css">
+
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+</head>
+
+<body>
+<div class="app-shell">
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar" id="sidebar">
+    <div class="brand">
+      <div class="brand-icon">ϟ</div>
+      <div>
+        <h2>POWER<span>AI</span></h2>
+        <small>BATTERY INTELLIGENCE</small>
+      </div>
+    </div>
+
+    <div class="sidebar-label">WORKSPACE</div>
+
+    <nav class="navigation">
+      <a href="#overview" class="nav-link active"><span>◈</span> Overview</a>
+      <a href="#analysis" class="nav-link"><span>▥</span> Battery Analysis</a>
+      <a href="#prediction" class="nav-link"><span>✦</span> AI Prediction</a>
+      <a href="#forecast" class="nav-link"><span>⌁</span> Health & Forecast</a>
+      <a href="#anomalies" class="nav-link"><span>⚠</span> Anomaly Detection</a>
+      <a href="#comparison" class="nav-link"><span>⇄</span> Battery Comparison</a>
+    </nav>
+
+    <div class="sidebar-label">TOOLS</div>
+
+    <nav class="navigation">
+      <a href="#manual" class="nav-link"><span>⌘</span> Manual Analysis</a>
+      <a href="#twin" class="nav-link"><span>◉</span> Digital Twin</a>
+      <a href="#advisor" class="nav-link"><span>✧</span> AI Advisor</a>
+      <a href="#reports" class="nav-link"><span>▤</span> Reports</a>
+    </nav>
+
+    <div class="sidebar-bottom">
+      <div class="sidebar-status">
+        <span class="live-dot"></span>
+        <div>
+          <strong id="connectionStatus">Connecting...</strong>
+          <small>Backend connection</small>
+        </div>
+      </div>
+      <div class="sidebar-footer">POWERAI v2.0<br>NASA Battery Research Data</div>
+    </div>
+  </aside>
+
+  <!-- MAIN CONTENT -->
+  <main class="main-content">
+
+    <!-- TOPBAR -->
+    <header class="topbar">
+      <div class="topbar-left">
+        <button class="menu-toggle" id="menuToggle" aria-label="Toggle menu">☰</button>
+        <div>
+          <div class="eyebrow">BATTERY INTELLIGENCE PLATFORM</div>
+          <h1>Dashboard Overview</h1>
+          <p class="topbar-subtitle">Monitor, analyze and understand battery performance.</p>
+        </div>
+      </div>
+
+      <div class="topbar-actions">
+        <div class="system-status">
+          <span class="live-dot"></span>
+          <span id="systemStatus">System Initializing</span>
+        </div>
+        <button class="icon-button" id="refreshButton" title="Refresh dashboard">↻</button>
+      </div>
+    </header>
+
+    <!-- OVERVIEW -->
+    <section id="overview" class="dashboard-section">
+
+      <div class="hero">
+        <div class="hero-content">
+          <div class="hero-tag"><span class="live-dot"></span> NASA DATA CONNECTED</div>
+          <h2>Intelligent Battery<br><span>Health Monitoring</span></h2>
+          <p>Explore real lithium-ion battery discharge data with interactive analytics, capacity estimation and intelligent insights.</p>
+          <a href="#analysis" class="hero-button">Explore Battery Analytics <span>→</span></a>
+        </div>
+        <div class="hero-visual">
+          <div class="hero-orbit orbit-one"></div>
+          <div class="hero-orbit orbit-two"></div>
+          <div class="hero-battery">
+            <div class="battery-terminal"></div>
+            <div class="battery-body">
+              <div class="battery-charge"></div>
+              <span>ϟ</span>
+            </div>
+          </div>
+          <div class="hero-caption">POWERAI ENGINE</div>
+        </div>
+      </div>
+
+      <div class="section-heading overview-heading">
+        <div>
+          <h2>Performance Overview</h2>
+          <p>Live metrics from the selected NASA battery dataset</p>
+        </div>
+        <div class="battery-selector">
+          <label for="batterySelect">SELECT BATTERY</label>
+          <select id="batterySelect">
+            <option value="B0005">Battery B0005</option>
+            <option value="B0006">Battery B0006</option>
+            <option value="B0007">Battery B0007</option>
+            <option value="B0018">Battery B0018</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="metrics-grid">
+        <article class="metric-card">
+          <div class="metric-top">
+            <span class="metric-label">Capacity Retention</span>
+            <span class="metric-icon cyan">◉</span>
+          </div>
+          <h3 id="healthValue">—</h3>
+          <p>Measured relative to first valid cycle</p>
+          <div class="metric-bottom"><span class="metric-indicator cyan-bg"></span> Capacity indicator</div>
+        </article>
+
+        <article class="metric-card">
+          <div class="metric-top">
+            <span class="metric-label">Total Discharge Cycles</span>
+            <span class="metric-icon blue">↗</span>
+          </div>
+          <h3 id="cycleValue">—</h3>
+          <p>Recorded discharge cycles</p>
+          <div class="metric-bottom"><span class="metric-indicator blue-bg"></span> NASA observations</div>
+        </article>
+
+        <article class="metric-card">
+          <div class="metric-top">
+            <span class="metric-label">Average Voltage</span>
+            <span class="metric-icon purple">ϟ</span>
+          </div>
+          <h3 id="voltageValue">—</h3>
+          <p>Average discharge voltage</p>
+          <div class="metric-bottom"><span class="metric-indicator purple-bg"></span> Voltage measurement</div>
+        </article>
+
+        <article class="metric-card">
+          <div class="metric-top">
+            <span class="metric-label">Average Temperature</span>
+            <span class="metric-icon orange">♨</span>
+          </div>
+          <h3 id="temperatureValue">—</h3>
+          <p>Average recorded temperature</p>
+          <div class="metric-bottom"><span class="metric-indicator orange-bg"></span> Temperature measurement</div>
+        </article>
+      </div>
+
+      <div class="overview-lower-grid">
+        <article class="panel health-panel">
+          <div class="panel-heading">
+            <div>
+              <h3>Battery Capacity Health</h3>
+              <p>Measured capacity retention indicator</p>
+            </div>
+            <span class="mini-badge">LIVE DATA</span>
+          </div>
+
+          <div class="health-content">
+            <div class="health-ring" id="healthRing">
+              <div class="health-ring-inner">
+                <strong id="healthRingValue">—</strong>
+                <span>RETENTION</span>
+              </div>
+            </div>
+            <div class="health-details">
+              <div class="detail-row">
+                <span>Initial Capacity</span>
+                <strong id="initialCapacity">—</strong>
+              </div>
+              <div class="detail-row">
+                <span>Latest Capacity</span>
+                <strong id="latestCapacity">—</strong>
+              </div>
+              <div class="detail-row">
+                <span>Capacity Degradation</span>
+                <strong id="degradationValue">—</strong>
+              </div>
+              <div class="detail-row">
+                <span>Selected Dataset</span>
+                <strong id="selectedBattery">B0005</strong>
+              </div>
+            </div>
+          </div>
+          <p class="disclaimer">Retention is calculated from measured capacity. It is not a certified battery SOH measurement.</p>
+        </article>
+
+        <article class="panel dataset-panel">
+          <div class="panel-heading">
+            <div>
+              <h3>Dataset Information</h3>
+              <p>NASA experimental data summary</p>
+            </div>
+            <span class="dataset-icon">▤</span>
+          </div>
+          <div class="dataset-stat">
+            <span>Records Processed</span>
+            <strong id="recordsValue">—</strong>
+          </div>
+          <div class="dataset-stat">
+            <span>Dataset Status</span>
+            <strong class="status-text" id="datasetStatus">Loading...</strong>
+          </div>
+          <div class="dataset-stat">
+            <span>Data Source</span>
+            <strong>NASA Ames</strong>
+          </div>
+          <div class="dataset-stat">
+            <span>Battery Chemistry</span>
+            <strong>Lithium-ion</strong>
+          </div>
+          <div class="dataset-stat">
+            <span>Analysis Type</span>
+            <strong>Discharge Cycles</strong>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <!-- BATTERY ANALYSIS -->
+    <section id="analysis" class="dashboard-section">
+      <div class="section-heading">
+        <div>
+          <div class="eyebrow">DATA VISUALIZATION</div>
+          <h2>Battery Analytics</h2>
+          <p>Explore battery performance across recorded discharge cycles.</p>
+        </div>
+        <span class="section-index">01 / ANALYTICS</span>
+      </div>
+
+      <div class="charts-grid">
+        <article class="panel chart-panel chart-wide">
+          <div class="panel-heading">
+            <div>
+              <h3>Capacity Degradation Trend</h3>
+              <p>Discharge capacity across cycle number</p>
+            </div>
+            <span class="chart-unit">Ah</span>
+          </div>
+          <div class="chart-container"><canvas id="capacityChart"></canvas></div>
+        </article>
+
+        <article class="panel chart-panel">
+          <div class="panel-heading">
+            <div>
+              <h3>Voltage Analysis</h3>
+              <p>Average voltage per cycle</p>
+            </div>
+            <span class="chart-unit">V</span>
+          </div>
+          <div class="chart-container"><canvas id="voltageChart"></canvas></div>
+        </article>
+
+        <article class="panel chart-panel">
+          <div class="panel-heading">
+            <div>
+              <h3>Temperature Analysis</h3>
+              <p>Average temperature per cycle</p>
+            </div>
+            <span class="chart-unit">°C</span>
+          </div>
+          <div class="chart-container"><canvas id="temperatureChart"></canvas></div>
+        </article>
+      </div>
+    </section>
+
+    <!-- AI PREDICTION -->
+    <section id="prediction" class="dashboard-section">
+      <div class="section-heading">
+        <div>
+          <div class="eyebrow">MACHINE LEARNING</div>
+          <h2>AI Prediction Center</h2>
+          <p>Capacity estimate generated using the connected ML model.</p>
+        </div>
+        <span class="section-index">02 / AI ENGINE</span>
+      </div>
+
+      <div class="prediction-grid">
+        <article class="panel prediction-card">
+          <div class="prediction-icon">✦</div>
+          <span>ML Estimated Capacity</span>
+          <h3 id="mlCapacity">—</h3>
+          <small>Estimated capacity (Ah)</small>
+        </article>
+
+        <article class="panel prediction-card">
+          <div class="prediction-icon">◉</div>
+          <span>Estimated Retention</span>
+          <h3 id="mlRetention">—</h3>
+          <small>Only when returned by the model</small>
+        </article>
+
+        <article class="panel prediction-card">
+          <div class="prediction-icon">⌁</div>
+          <span>Model Status</span>
+          <h3 id="mlStatus">Waiting</h3>
+          <small id="mlMessage">Connecting to model...</small>
+        </article>
+      </div>
+
+      <article class="panel info-panel">
+        <div class="info-icon">ⓘ</div>
+        <div>
+          <h4>Understanding the ML estimate</h4>
+          <p id="mlDisclaimer">The model estimates capacity from available discharge-cycle features. This result is not a validated State of Health (SOH) or Remaining Useful Life (RUL) prediction.</p>
+        </div>
+      </article>
+    </section>
+
+    <!-- FORECAST -->
+    <section id="forecast" class="dashboard-section">
+      <div class="section-heading">
+        <div>
+          <div class="eyebrow">HEALTH INTELLIGENCE</div>
+          <h2>Health & Degradation Forecast</h2>
+          <p>Capacity retention and simple historical trend extrapolation.</p>
+        </div>
+        <span class="section-index">03 / FORECAST</span>
+      </div>
+
+      <div class="forecast-grid">
+        <article class="panel forecast-score-panel">
+          <div class="panel-heading">
+            <div>
+              <h3>Capacity Retention Score</h3>
+              <p>Based on measured capacity</p>
+            </div>
+          </div>
+          <div class="forecast-score" id="forecastHealthScore">—</div>
+          <div class="score-caption">Retention indicator (%)</div>
+          <p class="disclaimer" id="healthBasis">Not a validated ML SOH prediction.</p>
+        </article>
+
+        <article class="panel chart-panel forecast-chart-panel">
+          <div class="panel-heading">
+            <div>
+              <h3>Historical Trend Extrapolation</h3>
+              <p>Measured capacity and next 10 estimated points</p>
+            </div>
+            <span class="chart-unit">Ah</span>
+          </div>
+          <div class="chart-container"><canvas id="forecastChart"></canvas></div>
+          <p class="disclaimer" id="forecastNote">A simple linear trend estimate, not a validated RUL prediction.</p>
+        </article>
+      </div>
+    </section>
+
+    <!-- ANOMALY DETECTION -->
+    <section id="anomalies" class="dashboard-section">
+      <div class="section-heading">
+        <div>
+          <div class="eyebrow">MONITORING & ALERTS</div>
+          <h2>Anomaly Detection Center</h2>
+          <p>Rule-based flags from recorded voltage and temperature observations.</p>
+        </div>
+        <span class="section-index">04 / MONITORING</span>
+      </div>
+
+      <div class="alert-summary-grid">
+        <article class="panel alert-summary">
+          <span class="alert-symbol orange">⚠</span>
+          <div><span>Flagged Cycles</span><strong id="anomalyCount">—</strong></div>
+        </article>
+        <article class="panel alert-summary">
+          <span class="alert-symbol cyan">✓</span>
+          <div><span>Cycles Checked</span><strong id="checkedCycles">—</strong></div>
+        </article>
+        <article class="panel alert-summary">
+          <span class="alert-symbol blue">⌁</span>
+          <div><span>Detection Method</span><strong>Basic Rules</strong></div>
+        </article>
+      </div>
+
+      <article class="panel table-panel">
+        <div class="panel-heading">
+          <div>
+            <h3>Flagged Observations</h3>
+            <p>Review cycles that triggered a rule</p>
+          </div>
+          <span class="mini-badge warning-badge">REVIEW ALERTS</span>
+        </div>
+        <div class="table-scroll">
+          <table>
+            <thead>
+              <tr>
+                <th>Cycle</th>
+                <th>Temperature</th>
+                <th>Voltage</th>
+                <th>Capacity</th>
+                <th>Reason</th>
+              </tr>
+            </thead>
+            <tbody id="anomalyTableBody">
+              <tr><td colspan="5" class="empty-state">Loading anomaly analysis...</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p class="disclaimer" id="anomalyMethod">Flags are based on basic thresholds and statistical outliers. They are not confirmed battery faults.</p>
+      </article>
+    </section>
+
+    <!-- COMPARISON -->
+    <section id="comparison" class="dashboard-section">
+      <div class="section-heading">
+        <div>
+          <div class="eyebrow">MULTI-BATTERY ANALYTICS</div>
+          <h2>Battery Comparison</h2>
+          <p>Compare the four available NASA battery datasets.</p>
+        </div>
+        <span class="section-index">05 / COMPARISON</span>
+      </div>
+
+      <div class="comparison-grid">
+        <article class="panel chart-panel">
+          <div class="panel-heading">
+            <div>
+              <h3>Capacity Retention Comparison</h3>
+              <p>Measured retention across datasets</p>
+            </div>
+          </div>
+          <div class="chart-container"><canvas id="comparisonChart"></canvas></div>
+        </article>
+
+        <article class="panel chart-panel">
+          <div class="panel-heading">
+            <div>
+              <h3>Cycle Count Comparison</h3>
+              <p>Recorded discharge cycles</p>
+            </div>
+          </div>
+          <div class="chart-container"><canvas id="cycleComparisonChart"></canvas></div>
+        </article>
+      </div>
+
+      <article class="panel table-panel">
+        <div class="panel-heading">
+          <div>
+            <h3>Dataset Comparison Table</h3>
+            <p>Measured values for each battery</p>
+          </div>
+          <button class="small-button" id="compareRefresh">↻ Refresh</button>
+        </div>
+        <div class="table-scroll">
+          <table>
+            <thead>
+              <tr>
+                <th>Battery</th>
+                <th>Cycles</th>
+                <th>Initial Capacity</th>
+                <th>Latest Capacity</th>
+                <th>Retention</th>
+                <th>Avg Voltage</th>
+                <th>Avg Temp.</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody id="comparisonTableBody">
+              <tr><td colspan="8" class="empty-state">Loading comparison...</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p class="disclaimer" id="comparisonNote">Comparison is based on the loaded dataset measurements.</p>
+      </article>
+    </section>
+
+    <!-- MANUAL ANALYSIS -->
+    <section id="manual" class="dashboard-section">
+      <div class="section-heading">
+        <div>
+          <div class="eyebrow">CUSTOM BATTERY INPUT</div>
+          <h2>Manual Battery Analysis</h2>
+          <p>Enter battery readings to calculate capacity retention and rule-based warnings.</p>
+        </div>
+        <span class="section-index">06 / MANUAL TOOL</span>
+      </div>
+
+      <div class="manual-grid">
+        <form class="panel form-panel" id="manualForm">
+          <div class="form-heading">
+            <h3>Battery Parameters</h3>
+            <p>Enter the available battery measurements</p>
+          </div>
+
+          <div class="form-grid">
+            <div class="form-group full-width">
+              <label for="manualBatteryType">Battery Type / Name</label>
+              <input id="manualBatteryType" name="battery_type" type="text" placeholder="e.g. Lithium-ion 18650" required maxlength="80">
+            </div>
+
+            <div class="form-group">
+              <label for="ratedCapacity">Rated Capacity (Ah)</label>
+              <input id="ratedCapacity" name="rated_capacity_ah" type="number" min="0.001" step="any" placeholder="2.5" required>
+            </div>
+
+            <div class="form-group">
+              <label for="measuredCapacity">Measured Capacity (Ah)</label>
+              <input id="measuredCapacity" name="measured_capacity_ah" type="number" min="0.001" step="any" placeholder="2.1" required>
+            </div>
+
+            <div class="form-group">
+              <label for="manualVoltage">Voltage (V)</label>
+              <input id="manualVoltage" name="voltage_v" type="number" min="0.001" step="any" placeholder="3.7" required>
+            </div>
+
+            <div class="form-group">
+              <label for="manualCurrent">Current (A)</label>
+              <input id="manualCurrent" name="current_a" type="number" step="any" placeholder="1.2" required>
+            </div>
+
+            <div class="form-group">
+              <label for="manualTemperature">Temperature (°C)</label>
+              <input id="manualTemperature" name="temperature_c" type="number" step="any" placeholder="28" required>
+            </div>
+
+            <div class="form-group">
+              <label for="manualCycles">Cycle Count</label>
+              <input id="manualCycles" name="cycle_count" type="number" min="0" step="1" placeholder="100" required>
+            </div>
+          </div>
+
+          <button class="primary-button full-button" type="submit" id="manualAnalyzeButton">
+            Analyze Battery <span>→</span>
+          </button>
+          <div class="form-message" id="manualMessage" aria-live="polite"></div>
+        </form>
+
+        <article class="panel manual-result-panel">
+          <div class="form-heading">
+            <h3>Analysis Results</h3>
+            <p>Your battery assessment will appear here</p>
+          </div>
+
+          <div id="manualResults" class="result-placeholder">
+            <div class="placeholder-icon">⌁</div>
+            <h4>Awaiting Battery Data</h4>
+            <p>Fill in the parameters and select Analyze Battery to view the results.</p>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <!-- DIGITAL TWIN -->
+    <section id="twin" class="dashboard-section">
+      <div class="section-heading">
+        <div>
+          <div class="eyebrow">WHAT-IF SCENARIO TOOL</div>
+          <h2>Digital Twin Simulator</h2>
+          <p>Explore illustrative capacity-retention scenarios using adjustable inputs.</p>
+        </div>
+        <span class="section-index">07 / SIMULATOR</span>
+      </div>
+
+      <div class="twin-grid">
+        <form class="panel form-panel" id="twinForm">
+          <div class="form-heading">
+            <h3>Simulation Parameters</h3>
+            <p>Set the current battery state and scenario changes</p>
+          </div>
+
+          <div class="form-grid">
+            <div class="form-group">
+              <label for="twinRatedCapacity">Rated Capacity (Ah)</label>
+              <input id="twinRatedCapacity" type="number" min="0.001" step="any" value="2.0" required>
+            </div>
+
+            <div class="form-group">
+              <label for="twinMeasuredCapacity">Measured Capacity (Ah)</label>
+              <input id="twinMeasuredCapacity" type="number" min="0.001" step="any" value="1.8" required>
+            </div>
+
+            <div class="form-group">
+              <label for="twinVoltage">Current Voltage (V)</label>
+              <input id="twinVoltage" type="number" min="0.001" step="any" value="3.7" required>
+            </div>
+
+            <div class="form-group">
+              <label for="twinTemperature">Current Temperature (°C)</label>
+              <input id="twinTemperature" type="number" step="any" value="28" required>
+            </div>
+
+            <div class="form-group">
+              <label for="extraTemperature">Scenario Temperature Increase (°C)</label>
+              <input id="extraTemperature" type="number" step="any" value="5" required>
+            </div>
+
+            <div class="form-group">
+              <label for="extraCycles">Additional Cycles</label>
+              <input id="extraCycles" type="number" min="0" step="1" value="100" required>
+            </div>
+          </div>
+
+          <button class="primary-button full-button" type="submit" id="simulateButton">
+            Run Scenario <span>→</span>
+          </button>
+          <div class="form-message" id="twinMessage" aria-live="polite"></div>
+        </form>
+
+        <article class="panel twin-result-panel">
+          <div class="form-heading">
+            <h3>Scenario Results</h3>
+            <p>Current state versus illustrative scenario</p>
+          </div>
+
+          <div id="twinResults" class="result-placeholder">
+            <div class="placeholder-icon">◉</div>
+            <h4>Simulator Ready</h4>
+            <p>Adjust the parameters and run a scenario to see the comparison.</p>
+          </div>
+          <div class="chart-container twin-chart-container">
+            <canvas id="twinChart"></canvas>
+          </div>
+        </article>
+      </div>
+
+      <div class="info-panel twin-disclaimer">
+        <div class="info-icon">ⓘ</div>
+        <div>
+          <h4>Simulation limitation</h4>
+          <p>This is an illustrative arithmetic what-if calculation. Its scenario coefficients are not calibrated to NASA data and do not simulate real electrochemical aging.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- AI ADVISOR -->
+    <section id="advisor" class="dashboard-section">
+      <div class="section-heading">
+        <div>
+          <div class="eyebrow">INTELLIGENT INSIGHTS</div>
+          <h2>Battery AI Advisor</h2>
+          <p>Understand recorded capacity trends and practical monitoring recommendations.</p>
+        </div>
+        <span class="section-index">08 / ADVISOR</span>
+      </div>
+
+      <article class="panel advisor-panel">
+        <div class="advisor-header">
+          <div class="advisor-avatar">✦</div>
+          <div>
+            <h3>POWERAI Insights</h3>
+            <p>Dataset-based advisory analysis</p>
+          </div>
+          <button class="small-button" id="advisorRefresh">↻ Refresh Insights</button>
+        </div>
+
+        <div id="advisorStatus" class="advisor-status">Loading battery insights...</div>
+
+        <div class="advisor-columns">
+          <div>
+            <h4>Key Insights</h4>
+            <div id="advisorInsights" class="advisor-list">
+              <p class="empty-state">Insights will appear here.</p>
+            </div>
+          </div>
+          <div>
+            <h4>Recommendations</h4>
+            <div id="advisorRecommendations" class="advisor-list">
+              <p class="empty-state">Recommendations will appear here.</p>
+            </div>
+          </div>
+        </div>
+
+        <p class="disclaimer">Advisor output is based on simple rules and historical measurements, not a validated AI safety system.</p>
+      </article>
+    </section>
+
+    <!-- REPORTS -->
+    <section id="reports" class="dashboard-section">
+      <div class="section-heading">
+        <div>
+          <div class="eyebrow">EXPORT & DOCUMENTATION</div>
+          <h2>Reports & Documentation</h2>
+          <p>Generate a summary of the selected battery's analysis.</p>
+        </div>
+        <span class="section-index">09 / REPORTS</span>
+      </div>
+
+      <div class="report-grid">
+        <article class="panel report-card">
+          <div class="report-icon">▤</div>
+          <h3>Battery Analysis Report</h3>
+          <p>Export the selected battery's metrics, measured capacity trend, analysis summary and model limitations as a PDF.</p>
+          <button class="primary-button" id="exportPdfButton">Generate PDF Report <span>↓</span></button>
+          <div id="reportMessage" class="form-message" aria-live="polite"></div>
+        </article>
+
+        <article class="panel report-info">
+          <h3>Project Information</h3>
+          <div class="dataset-stat"><span>Project</span><strong>POWERAI</strong></div>
+          <div class="dataset-stat"><span>System</span><strong>Predictive Battery Management</strong></div>
+          <div class="dataset-stat"><span>Backend</span><strong>Python / FastAPI</strong></div>
+          <div class="dataset-stat"><span>Frontend</span><strong>HTML / CSS / JavaScript</strong></div>
+          <div class="dataset-stat"><span>Data Source</span><strong>NASA Lithium-ion Dataset</strong></div>
+        </article>
+      </div>
+    </section>
+
+    <!-- FOOTER -->
+    <footer class="app-footer">
+      <div class="footer-brand">POWER<span>AI</span></div>
+      <p>AI-Powered Predictive Battery Management System</p>
+      <p class="footer-note">Research and educational prototype · NASA discharge data</p>
+    </footer>
+
+  </main>
+</div>
+
+<script src="script.js"></script>
+</body>
+</html>
