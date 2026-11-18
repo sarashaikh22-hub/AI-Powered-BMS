@@ -6,7 +6,7 @@
    API: FastAPI at http://127.0.0.1:8000
 ========================================================= */
 
-const API_BASE = "http://127.0.0.1:8000";
+const API_BASE = "https://ai-powered-bms.onrender.com";
 const BATTERY_IDS = ["B0005", "B0006", "B0007", "B0018"];
 
 let dashboardData = null;
@@ -1113,6 +1113,98 @@ async function handleManualAnalysis(event) {
     });
 
     renderManualResults(data);
+    function renderManualResults(data) {
+  const container = $("manualResults");
+  if (!container) return;
+
+  const retention = getFirst(data, [
+    "capacity_retention_percent",
+    "capacity_retention",
+    "retention_percent",
+    "health_percentage"
+  ]);
+
+  const degradation = getFirst(data, [
+    "capacity_degradation_percent",
+    "capacity_degradation",
+    "degradation_percent"
+  ]);
+
+  const warnings = normalizeArray(getFirst(data, [
+    "warnings",
+    "alerts",
+    "issues"
+  ], []));
+
+  const recommendations = normalizeArray(getFirst(data, [
+    "recommendations",
+    "suggestions",
+    "actions"
+  ], []));
+
+  const rated = getFirst(data, [
+    "rated_capacity_ah",
+    "rated_capacity"
+  ]);
+
+  const measured = getFirst(data, [
+    "measured_capacity_ah",
+    "measured_capacity"
+  ]);
+
+  const status = getFirst(data, [
+    "status",
+    "battery_status",
+    "health_status"
+  ], "Analysis completed");
+
+  container.innerHTML = `
+    <div class="result-content">
+      <div class="result-main">
+        <span>Calculated Capacity Retention</span>
+        <strong>${escapeHTML(formatPercent(retention))}</strong>
+      </div>
+
+      <div class="result-line">
+        <span>Battery Status</span>
+        <strong>${escapeHTML(status)}</strong>
+      </div>
+
+      <div class="result-line">
+        <span>Rated Capacity</span>
+        <strong>${escapeHTML(rated ?? "—")} Ah</strong>
+      </div>
+
+      <div class="result-line">
+        <span>Measured Capacity</span>
+        <strong>${escapeHTML(measured ?? "—")} Ah</strong>
+      </div>
+
+      <div class="result-line">
+        <span>Capacity Degradation</span>
+        <strong>${escapeHTML(formatPercent(degradation))}</strong>
+      </div>
+
+      <h4 style="margin-top:17px;font-size:11px;">Warnings</h4>
+      <ul class="result-list">
+        ${
+          warnings.length
+            ? warnings.map((item) => `<li>${escapeHTML(item)}</li>`).join("")
+            : "<li>No warnings returned by the analysis.</li>"
+        }
+      </ul>
+
+      <h4 style="margin-top:17px;font-size:11px;">Recommendations</h4>
+      <ul class="result-list">
+        ${
+          recommendations.length
+            ? recommendations.map((item) => `<li>${escapeHTML(item)}</li>`).join("")
+            : "<li>No recommendations were returned.</li>"
+        }
+      </ul>
+    </div>
+  `;
+}
     setMessage("manualMessage", "Analysis completed successfully.", "success");
   } catch (error) {
     console.error("Manual analysis error:", error);
