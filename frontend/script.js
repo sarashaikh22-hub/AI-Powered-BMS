@@ -417,61 +417,88 @@ function renderOverview(data) {
 ========================================================= */
 
 function renderPrediction(data) {
-  const prediction = getFirst(data, [
-    "prediction",
-    "ml_prediction",
-    "model_prediction"
-  ], {}) || {};
+  // No trained ML model is connected. Show a transparent estimate
+  // from the recent measured NASA discharge-capacity trend instead.
+  const cycles = getCycles(data)
+    .filter((item) => Number.isFinite(item.capacity) && item.capacity > 0)
+    .sort((a, b) => a.cycle - b.cycle);
 
-  const capacity = getFirst(data, [
-    "predicted_capacity_ah",
-    "estimated_capacity_ah"
-  ], getFirst(prediction, [
-    "predicted_capacity_ah",
-    "predicted_capacity",
-    "capacity"
-  ]));
-
-  const retention = getFirst(data, [
-    "predicted_retention",
-    "predicted_retention_percent",
-    "estimated_retention"
-  ], getFirst(prediction, [
-    "predicted_retention",
-    "retention_percent",
-    "predicted_retention_percent"
-  ]));
-
-  const modelStatus = getFirst(data, [
-    "model_status",
-    "prediction_status"
-  ], getFirst(prediction, ["status"], null));
-
-  const message = getFirst(data, [
-    "model_message",
-    "prediction_message"
-  ], getFirst(prediction, ["message"], null));
-
-  if (capacity !== null) {
-    setText("mlCapacity", `${formatNumber(capacity, 4)} Ah`);
-    setText("mlStatus", modelStatus || "Available");
-    setText("mlMessage", message || "Model returned an estimate");
-  } else {
+  if (cycles.length < 2) {
     setText("mlCapacity", "Unavailable");
-    setText("mlStatus", modelStatus || "Not Available");
+    setText("mlRetention", "Not available");
+    setText("mlStatus", "Insufficient NASA data");
+
     setText(
       "mlMessage",
-      message || "No ML capacity prediction returned by the backend."
+      "At least two measured discharge cycles are needed to estimate a capacity trend."
     );
+
+    setText(
+      "mlDisclaimer",
+      "This is not an ML prediction. It is a simple estimate based on measured NASA discharge-capacity data."
+    );
+
+    return;
   }
 
-  setText("mlRetention", retention !== null
-    ? formatPercent(retention)
-    : "Not available");
+  // Use up to the latest 10 measured cycles for a simple linear trend.
+  const recent = cycles.slice(-10);
+  const count = recent.length;
+
+  const meanX =
+    recent.reduce((sum, item) => sum + item.cycle, 0) / count;
+
+  const meanY =
+    recent.reduce((sum, item) => sum + item.capacity, 0) / count;
+
+  let numerator = 0;
+  let denominator = 0;
+
+  for (const item of recent) {
+    numerator +=
+      (item.cycle - meanX) * (item.capacity - meanY);
+
+    denominator += (item.cycle - meanX) ** 2;
+  }
+
+  const slope = denominator > 0 ? numerator / denominator : 0;
+
+  const latest = cycles[cycles.length - 1];
+
+  const estimatedCapacity = Math.max(
+    0,
+    latest.capacity + slope
+  );
+
+  const initialCapacity = cycles[0].capacity;
+
+  const estimatedRetention =
+    initialCapacity > 0
+      ? (estimatedCapacity / initialCapacity) * 100
+      : null;
+
+  setText(
+    "mlCapacity",
+    `${formatNumber(estimatedCapacity, 4)} Ah`
+  );
+
+  setText(
+    "mlRetention",
+    estimatedRetention !== null
+      ? formatPercent(estimatedRetention)
+      : "Not available"
+  );
+
+  setText("mlStatus", "NASA trend estimate");
+
+  setText(
+    "mlMessage",
+    `Estimated next-cycle capacity from the latest ${count} measured NASA discharge cycles.`
+  );
 
   setText(
     "mlDisclaimer",
-    "The ML estimate is based on the connected model and available input features. It should not be treated as a validated SOH or RUL prediction."
+    "Trend-based estimate only — not a trained ML prediction or a validated SOH/RUL result."
   );
 }
 
